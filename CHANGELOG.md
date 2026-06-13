@@ -1,0 +1,38 @@
+# Changelog
+
+All notable changes to SwiftMeshHeal are documented here. The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html). Pre-1.0: the API may change between minor
+versions.
+
+## [0.1.1] - 2026-06-14
+
+### Added
+- DocC documentation catalog and a full API reference landing page.
+- `CHANGELOG.md`.
+
+## [0.1.0] - 2026-06-14
+
+Initial release. Pure-Swift, dependency-free, on-device triangle-mesh healing.
+
+### Added
+- `MeshHeal` value type (welded positions + indices) with `isWatertight`, `enclosedVolume`,
+  `surfaceArea`, `pcaExtents`, `bounds`.
+- Topology: `boundaryLoops()`, `nonManifoldEdgeCount`, `resolveNonManifoldEdges()`,
+  `removingDuplicateFaces()`, `repairedManifold()`, `generalizedWindingNumber(_:)`,
+  `firstRayHit(origin:direction:)`.
+- **Liepa (2003) minimum-dihedral hole filling** — `liepaFill(loop:bndNormals:existingEdges:)` —
+  handling non-planar holes, forbidding diagonals that collide with existing edges, with a centroid-fan
+  fallback for slits/cracks.
+- `filledHoles(skipLoop:)` and the `tier1Healed(skipLoop:)` preprocessing entry point.
+- `throughOpeningSkip(minArea:clearDist:)` — protect genuine through-openings (windows/doors) by a
+  ray + enclosed-area test, so they're left open instead of welded shut.
+- `isDegenerateSheet` — route zero-thickness sheets / membranes past the healer.
+
+### Notes
+- Validated on a 278k-triangle, 3946-body reference STL: `tier1Healed` closes 99.8% of solidifiable
+  bodies to watertight, ~ms/body, non-destructively (0 mm distortion of existing geometry), preserving
+  intended openings.
+
+[0.1.1]: https://github.com/gsdali/SwiftMeshHeal/releases/tag/v0.1.1
+[0.1.0]: https://github.com/gsdali/SwiftMeshHeal/releases/tag/v0.1.0
