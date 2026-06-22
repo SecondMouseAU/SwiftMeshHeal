@@ -1,0 +1,10 @@
+okf_version: 1
+repo: SwiftMeshHeal
+cluster: kernel
+visibility: public
+status: active
+language: Swift
+summary: On-device, dependency-free triangle-mesh healing in pure Swift — turns broken / non-watertight STL bodies into closed, manifold solids while preserving intended openings.
+products: []
+depends_on: []          # leaf — pure Swift, no intra-org or native deps
+maintainer: gsdali
