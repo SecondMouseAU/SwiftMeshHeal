@@ -39,12 +39,19 @@ let skip = mesh.throughOpeningSkip()          // real area + ray clears space bo
 let healed = mesh.tier1Healed(skipLoop: skip).mesh
 ```
 
+`throughOpeningSkip()` reads vertex positions, and healing grows the mesh as it fills, so for
+multi-hole shells prefer the factory form — it re-derives the predicate against the mesh as it evolves:
+
+```swift
+let healed = mesh.tier1Healed(skipLoopFor: { $0.throughOpeningSkip() }).mesh
+```
+
 ## API surface
 
 - `MeshHeal(positions:indices:)`, `isWatertight`, `enclosedVolume`, `surfaceArea`, `pcaExtents`, `bounds`
 - `boundaryLoops()`, `nonManifoldEdgeCount`, `resolveNonManifoldEdges()`, `removingDuplicateFaces()`
 - `repairedManifold()`, `generalizedWindingNumber(_:)`, `firstRayHit(origin:direction:)`
-- `liepaFill(loop:bndNormals:existingEdges:)`, `filledHoles(skipLoop:)`, `tier1Healed(skipLoop:)`
+- `liepaFill(loop:bndNormals:existingEdges:)`, `filledHoles(skipLoop:)`, `tier1Healed(skipLoop:)`, `tier1Healed(skipLoopFor:)`
 - `throughOpeningSkip(minArea:clearDist:)`, `isDegenerateSheet`
 
 ## Validation

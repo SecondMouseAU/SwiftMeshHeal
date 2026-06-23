@@ -57,6 +57,20 @@ struct MeshHealTests {
         #expect(skip(outOfRange) == false)
     }
 
+    @Test func tier1HealedFactoryRebindsPredicatePerPass() {
+        // The factory overload re-derives the predicate against the *current* mesh each pass, so a
+        // position-reading predicate stays valid as healing grows the mesh (issue #4, option 2). The
+        // factory is handed the evolving mesh; assert it never sees a loop index out of that mesh's
+        // range, and that healing still closes the hole.
+        let healed = cube(openTop: true).tier1Healed(skipLoopFor: { mesh in
+            { loop in
+                for vi in loop { #expect(Int(vi) < mesh.positions.count) }
+                return mesh.throughOpeningSkip()(loop)
+            }
+        }).mesh
+        #expect(healed.isWatertight)
+    }
+
     @Test func degenerateSheetIsPassedThrough() {
         // A single quad (2 triangles, zero thickness) is not solidifiable.
         let sheet = MeshHeal(positions: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], indices: [0, 1, 2, 0, 2, 3])

@@ -7,6 +7,13 @@ versions.
 
 ## [Unreleased]
 
+### Added
+- `tier1Healed(skipLoopFor:)` — a mesh-parameterized overload that re-derives the skip predicate
+  against the current mesh before each fill pass. Because healing grows the mesh, a predicate captured
+  against the original mesh (e.g. `throughOpeningSkip()`, which reads vertex positions) can be handed
+  loops whose indices exceed its `positions`; rebinding per pass keeps it valid. Pass
+  `{ $0.throughOpeningSkip() }`. ([#4](https://github.com/gsdali/SwiftMeshHeal/issues/4))
+
 ### Fixed
 - `tier1Healed(skipLoop:)` no longer crashes with `Index out of range` on real multi-hole shells. The
   `throughOpeningSkip` predicate captures the pre-heal mesh, but `tier1Healed` applies it across an

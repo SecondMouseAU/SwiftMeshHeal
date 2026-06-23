@@ -47,6 +47,14 @@ faces for cost) → `removingDuplicateFaces()` → iterates `filledHoles` until 
 predicate) or fills it via `liepaFill`, falling back to a centroid-fan for slits/cracks where the DP
 fill fails.
 
+Because the centroid-fan fallback **appends vertices**, the mesh grows across iterations. A `skipLoop`
+predicate that reads positions (e.g. `throughOpeningSkip`) is therefore unsafe if bound once to the
+pre-heal mesh — a later loop can carry indices beyond its `positions` (this was issue #4). Two layers
+guard against it: `throughOpeningSkip` self-checks `Int($0) < positions.count`, and
+`tier1Healed(skipLoopFor:)` takes a `(MeshHeal) -> ([UInt32]) -> Bool` factory that re-derives the
+predicate against the current mesh each pass. Prefer the factory form for any position-reading
+predicate; `tier1Healed(skipLoop:)` now just delegates with a constant factory.
+
 ### Key conventions to preserve
 
 - **Edge keys are packed `UInt64`** (`(max << 32) | min`) for undirected-edge hashing — the recurring

@@ -122,17 +122,33 @@ public extension MeshHeal {
     /// manifold resolve, then (2) iterate resolve→fill ×3 (each pass clears the prior pass's residual
     /// non-manifold edges). Degenerate sheets are passed through unchanged (not solidifiable). Pass
     /// `skipLoop` to protect intended openings.
-    func tier1Healed(skipLoop: ([UInt32]) -> Bool = { _ in false }) -> (mesh: MeshHeal, filled: Int, skipped: Int, remainingUnfilled: Int) {
+    ///
+    /// `skipLoop` is bound once to this (pre-heal) mesh. Healing *grows* the mesh — slits/cracks are
+    /// fan-filled from fresh vertices — so a predicate that reads vertex positions (e.g.
+    /// ``throughOpeningSkip(minArea:clearDist:)``) sees a mesh that no longer matches the loop indices
+    /// it is handed. When the predicate must reflect the mesh as it evolves, use
+    /// ``tier1Healed(skipLoopFor:)`` instead.
+    func tier1Healed(skipLoop: @escaping ([UInt32]) -> Bool = { _ in false }) -> (mesh: MeshHeal, filled: Int, skipped: Int, remainingUnfilled: Int) {
+        tier1Healed(skipLoopFor: { _ in skipLoop })
+    }
+
+    /// Like ``tier1Healed(skipLoop:)`` but the skip predicate is *re-derived from the current mesh*
+    /// before each fill pass via `skipLoopFor`. Because healing grows the mesh, a predicate captured
+    /// against the original mesh can be handed boundary loops whose indices exceed its `positions`;
+    /// rebinding per pass keeps a position-reading predicate valid against the evolving topology.
+    /// Pass `{ $0.throughOpeningSkip() }` for the built-in through-opening test. See GitHub issue #4.
+    func tier1Healed(skipLoopFor: (MeshHeal) -> ([UInt32]) -> Bool) -> (mesh: MeshHeal, filled: Int, skipped: Int, remainingUnfilled: Int) {
         if isDegenerateSheet { return (self, 0, 0, boundaryLoops().count) }
         var m = (triangleCount > 6000 ? self : repairedManifold()).removingDuplicateFaces()
         var lastFilled = 0, lastSkipped = 0
         for _ in 0..<3 {
             if m.nonManifoldEdgeCount > 0 { m = m.resolveNonManifoldEdges() }
-            let (filled, f, s, _) = m.filledHoles(skipLoop: skipLoop)
+            let (filled, f, s, _) = m.filledHoles(skipLoop: skipLoopFor(m))
             lastFilled = f; lastSkipped = s; m = filled
             if m.isWatertight { break }
         }
-        return (m, lastFilled, lastSkipped, m.boundaryLoops().filter { !skipLoop($0) }.count)
+        let finalSkip = skipLoopFor(m)
+        return (m, lastFilled, lastSkipped, m.boundaryLoops().filter { !finalSkip($0) }.count)
     }
 
     /// A `skipLoop` predicate that protects genuine through-openings (the shell's windows/doors): a loop
