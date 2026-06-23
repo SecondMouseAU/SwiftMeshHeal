@@ -5,7 +5,7 @@ All notable changes to SwiftMeshHeal are documented here. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Pre-1.0: the API may change between minor
 versions.
 
-## [Unreleased]
+## [0.2.0] - 2026-06-24
 
 ### Added
 - `tier1Healed(skipLoopFor:)` — a mesh-parameterized overload that re-derives the skip predicate
@@ -50,5 +50,6 @@ Initial release. Pure-Swift, dependency-free, on-device triangle-mesh healing.
   bodies to watertight, ~ms/body, non-destructively (0 mm distortion of existing geometry), preserving
   intended openings.
 
+[0.2.0]: https://github.com/gsdali/SwiftMeshHeal/releases/tag/v0.2.0
 [0.1.1]: https://github.com/gsdali/SwiftMeshHeal/releases/tag/v0.1.1
 [0.1.0]: https://github.com/gsdali/SwiftMeshHeal/releases/tag/v0.1.0
