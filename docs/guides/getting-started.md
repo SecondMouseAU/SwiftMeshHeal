@@ -60,7 +60,11 @@ print("surface area:     ", broken.surfaceArea)
 print("triangles:        ", broken.triangleCount)
 ```
 
-<!-- 3D render TODO: broken cube with open lid -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+<model-viewer src="models/healed-solid.glb" camera-controls auto-rotate environment-image="neutral" exposure="1.1" shadow-intensity="1" style="width:340px;height:300px;background:#eef1f5;border-radius:6px"></model-viewer>
+
+*Interactive — a watertight, manifold solid, the kind of closed mesh `tier1Healed` produces from a broken input.*
 
 ## 4. Heal it
 

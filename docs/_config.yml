@@ -1,0 +1,5 @@
+title: SwiftMeshHeal
+description: Pure-Swift, dependency-free triangle-mesh healing — broken STL → closed manifold solids.
+remote_theme: just-the-docs/just-the-docs@v0.3.3
+aux_links:
+  "GitHub": ["https://github.com/SecondMouseAU/SwiftMeshHeal"]
