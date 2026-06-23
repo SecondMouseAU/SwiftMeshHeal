@@ -1,0 +1,25 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "SwiftMeshHeal",
+  "description": "Pure-Swift, dependency-free triangle-mesh healing: broken / non-watertight STL bodies into closed manifold solids on iOS + macOS. Liepa hole filling, generalized winding number, feature-preserving.",
+  "folders": [
+    "docs",
+    "Sources/SwiftMeshHeal"
+  ],
+  "excludeFolders": [
+    "Tests",
+    ".build",
+    "okf",
+    "Examples"
+  ],
+  "rules": [
+    "Import with `import SwiftMeshHeal`. The only public type is `MeshHeal`, a Sendable/Equatable value type; there is no dependency (no OCCT, CGAL, GMP, Eigen) and no native build step.",
+    "Construct with `MeshHeal(positions:indices:)` — `positions` is `[SIMD3<Float>]` welded vertices, `indices` is a flat `[UInt32]` buffer of 3 vertex indices per triangle.",
+    "`tier1Healed(skipLoop:)` is THE entry point: it removes membranes/duplicates, resolves non-manifold edges, and Liepa-fills holes, returning `(mesh, filled, skipped, remainingUnfilled)`.",
+    "Operations are non-mutating and return a new `MeshHeal`: `removingDuplicateFaces()`, `resolveNonManifoldEdges()`, `repairedManifold(maxFaces:)`. The receiver is never changed (value semantics).",
+    "Inspect state with the properties `isWatertight`, `nonManifoldEdgeCount`, `enclosedVolume`, `surfaceArea`, `pcaExtents`, `bounds`, `isDegenerateSheet`, and the method `boundaryLoops()`.",
+    "By default every boundary loop is filled (a missing back is a defect, not an opening). Protect genuine through-openings (windows/doors) by passing `throughOpeningSkip(minArea:clearDist:)` as `skipLoop`.",
+    "Lower-level filling: `liepaFill(loop:bndNormals:existingEdges:)` (min-dihedral patch, returns nil for slits), `boundaryEdgeFaceNormals()`, and `filledHoles(skipLoop:)`.",
+    "Geometry primitives: `generalizedWindingNumber(_:)` (~1 inside, ~0 outside) and `firstRayHit(origin:direction:maxDist:eps:)` (Moller-Trumbore, returns distance or nil)."
+  ]
+}
