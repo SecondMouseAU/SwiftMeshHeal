@@ -47,6 +47,16 @@ struct MeshHealTests {
         for p in raw.positions { #expect(healed.positions.contains(p)) }
     }
 
+    @Test func throughOpeningSkipDeclinesOutOfRangeLoop() {
+        // Regression for issue #4: `tier1Healed` applies a captured predicate across an evolving mesh
+        // that grows during fan-fallback healing, so a later loop can carry indices beyond the pre-heal
+        // mesh's `positions`. The predicate must decline such loops (→ fill), not index out of range.
+        let m = cube(openTop: true)
+        let skip = m.throughOpeningSkip()
+        let outOfRange: [UInt32] = [0, 1, 2, 3, 4, UInt32(m.positions.count)]   // last index is appended
+        #expect(skip(outOfRange) == false)
+    }
+
     @Test func degenerateSheetIsPassedThrough() {
         // A single quad (2 triangles, zero thickness) is not solidifiable.
         let sheet = MeshHeal(positions: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], indices: [0, 1, 2, 0, 2, 3])

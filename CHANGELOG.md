@@ -5,6 +5,15 @@ All notable changes to SwiftMeshHeal are documented here. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Pre-1.0: the API may change between minor
 versions.
 
+## [Unreleased]
+
+### Fixed
+- `tier1Healed(skipLoop:)` no longer crashes with `Index out of range` on real multi-hole shells. The
+  `throughOpeningSkip` predicate captures the pre-heal mesh, but `tier1Healed` applies it across an
+  evolving mesh that grows when slits/cracks are fan-filled from a fresh vertex; the predicate now
+  declines loops carrying appended (out-of-range) indices — they are fill artifacts, never genuine
+  openings — instead of indexing out of bounds. ([#4](https://github.com/gsdali/SwiftMeshHeal/issues/4))
+
 ## [0.1.1] - 2026-06-14
 
 ### Added

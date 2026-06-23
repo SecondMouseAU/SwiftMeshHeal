@@ -141,7 +141,11 @@ public extension MeshHeal {
     /// trigger it (rays hit nearby → fill fully); the area gate keeps cracks classed as defects.
     func throughOpeningSkip(minArea: Double = 6.0, clearDist: Double = 10.0) -> ([UInt32]) -> Bool {
         return { loop in
-            guard loop.count >= 6 else { return false }
+            // `tier1Healed` applies this predicate across an *evolving* mesh that grows when a
+            // slit/crack is fan-filled from a fresh centroid vertex. Such loops carry indices beyond
+            // this (pre-heal) mesh's `positions` — and are fill artifacts, never genuine openings — so
+            // decline them (→ fill) rather than index out of range. See GitHub issue #4.
+            guard loop.count >= 6, loop.allSatisfy({ Int($0) < self.positions.count }) else { return false }
             let pts = loop.map { self.pos($0) }
             let c = pts.reduce(SIMD3<Double>.zero, +) / Double(pts.count)
             let (cov, _) = Linalg.covariance(pts)
