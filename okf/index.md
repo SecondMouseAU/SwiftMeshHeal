@@ -40,3 +40,8 @@ winding number, and the Swift Package Index page.
 - Validated on a 278k-triangle, 3946-body railcar STL: closes ~99.8% of solidifiable bodies to
   watertight, ~ms/body, with 0 mm distortion of existing geometry.
 - MIT licensed. Published to the Swift Package Index via `.spi.yml`.
+
+## Policies
+
+- [Query `context` first for OCCT / OCCTSwift docs](policies/context-first.md)
+- [Documentation updates are mandatory](policies/docs-current.md)
