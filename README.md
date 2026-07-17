@@ -1,5 +1,8 @@
 # SwiftMeshHeal
 
+[![Swift](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSecondMouseAU%2FSwiftMeshHeal%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/SecondMouseAU/SwiftMeshHeal)
+[![Platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSecondMouseAU%2FSwiftMeshHeal%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/SecondMouseAU/SwiftMeshHeal)
+
 On-device, **dependency-free** triangle-mesh healing in pure Swift — turn broken / non-watertight STL
 bodies into closed, manifold solids, body-by-body, embedded on **iOS arm64 + macOS** with no OCCT, no
 CGAL, no GMP, no Eigen, no native build step.
