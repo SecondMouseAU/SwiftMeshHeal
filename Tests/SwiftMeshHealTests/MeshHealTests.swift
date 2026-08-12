@@ -1,21 +1,22 @@
 import Testing
 import simd
+
 @testable import SwiftMeshHeal
 
 /// A unit cube as 8 vertices + 12 triangles, optionally omitting the +Z top face (a square hole).
 private func cube(openTop: Bool) -> MeshHeal {
     let p: [SIMD3<Float>] = [
-        [0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0],   // 0..3 bottom (z=0)
-        [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1],   // 4..7 top (z=1)
+        [0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0],  // 0..3 bottom (z=0)
+        [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1],  // 4..7 top (z=1)
     ]
     var f: [UInt32] = [
-        0, 2, 1, 0, 3, 2,   // bottom
-        0, 1, 5, 0, 5, 4,   // -Y
-        1, 2, 6, 1, 6, 5,   // +X
-        2, 3, 7, 2, 7, 6,   // +Y
-        3, 0, 4, 3, 4, 7,   // -X
+        0, 2, 1, 0, 3, 2,  // bottom
+        0, 1, 5, 0, 5, 4,  // -Y
+        1, 2, 6, 1, 6, 5,  // +X
+        2, 3, 7, 2, 7, 6,  // +Y
+        3, 0, 4, 3, 4, 7,  // -X
     ]
-    if !openTop { f += [4, 5, 6, 4, 6, 7] }   // +Z top
+    if !openTop { f += [4, 5, 6, 4, 6, 7] }  // +Z top
     return MeshHeal(positions: p, indices: f)
 }
 
@@ -29,7 +30,7 @@ struct MeshHealTests {
         let m = cube(openTop: true)
         #expect(!m.isWatertight)
         #expect(m.boundaryLoops().count == 1)
-        #expect(m.boundaryLoops().first?.count == 4)   // the square rim
+        #expect(m.boundaryLoops().first?.count == 4)  // the square rim
     }
 
     @Test func tier1HealClosesTheHole() {
@@ -53,7 +54,8 @@ struct MeshHealTests {
         // mesh's `positions`. The predicate must decline such loops (→ fill), not index out of range.
         let m = cube(openTop: true)
         let skip = m.throughOpeningSkip()
-        let outOfRange: [UInt32] = [0, 1, 2, 3, 4, UInt32(m.positions.count)]   // last index is appended
+        // Last index is appended (beyond `m.positions`).
+        let outOfRange: [UInt32] = [0, 1, 2, 3, 4, UInt32(m.positions.count)]
         #expect(skip(outOfRange) == false)
     }
 
@@ -73,7 +75,8 @@ struct MeshHealTests {
 
     @Test func degenerateSheetIsPassedThrough() {
         // A single quad (2 triangles, zero thickness) is not solidifiable.
-        let sheet = MeshHeal(positions: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], indices: [0, 1, 2, 0, 2, 3])
+        let sheet = MeshHeal(
+            positions: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], indices: [0, 1, 2, 0, 2, 3])
         #expect(sheet.isDegenerateSheet)
         #expect(sheet.tier1Healed().mesh == sheet)
     }
