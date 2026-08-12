@@ -1,0 +1,56 @@
+name: code-style
+
+# The ecosystem's code-style policy (SwiftMeshHeal#12); see
+# docs/code-style-policy-proposal-2026-08.md in the `ecosystem` repo for the
+# full rationale, and OCCTSwiftScripts#114/#115 for the reference
+# implementation this repo's rollout follows. Chosen for a full sweep rather
+# than a gradual "if you touch it, you fix it" exemption manifest: this repo
+# is small enough (~547 Swift lines across 4 files) to fully sweep into
+# compliance in one PR and go straight to a blocking gate.
+#
+# Pure text analysis (formatting + lint), no compiled output needed by any of
+# the three checks, so this stays a macOS runner only because that's where
+# swift-format and swiftlint are both readily available via Homebrew.
+#
+# swift-format and SwiftLint are blocking: formatting has no judgment call in
+# it. The comment-ratio check is report-only by design (see the script's own
+# header) and is not a gate; it always exits 0.
+
+on:
+  push:
+    paths:
+      - 'Sources/**'
+      - 'Tests/**'
+      - '.swift-format'
+      - '.swiftlint.yml'
+      - 'Scripts/comment-ratio-check.sh'
+      - '.github/workflows/code-style.yml'
+  pull_request:
+    paths:
+      - 'Sources/**'
+      - 'Tests/**'
+      - '.swift-format'
+      - '.swiftlint.yml'
+      - 'Scripts/comment-ratio-check.sh'
+      - '.github/workflows/code-style.yml'
+  workflow_dispatch:
+
+jobs:
+  code-style:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install swift-format and SwiftLint
+        run: brew install swift-format swiftlint
+
+      - name: swift-format lint --strict
+        run: |
+          find Sources Tests -name '*.swift' -print0 \
+            | xargs -0 swift-format lint --strict --configuration .swift-format
+
+      - name: swiftlint lint --strict
+        run: swiftlint lint --strict --config .swiftlint.yml
+
+      - name: Comment:code ratio (report-only, never fails)
+        run: Scripts/comment-ratio-check.sh
